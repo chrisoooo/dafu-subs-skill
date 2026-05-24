@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.class
+
+# Local caches and environments
+.cache/
+.uv-cache/
+.vendor/
+.venv-asr/
+.venv*/
+config/dafu-subs.local.json
+
+# Build and tool output
+*.log
+
+# Generated video workspace
+downloads/

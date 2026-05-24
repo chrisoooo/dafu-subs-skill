@@ -1,0 +1,38 @@
+{
+  "chinese": {
+    "style": {
+      "Fontname": "Heiti SC",
+      "FontSize": 46,
+      "PrimaryColour": "&Hffffff",
+      "OutlineColour": "&H000000",
+      "BorderStyle": 1,
+      "Outline": 4,
+      "Shadow": 0,
+      "Bold": 1
+    },
+    "position": {
+      "Alignment": 2,
+      "MarginV": 116,
+      "MarginL": 0,
+      "MarginR": 0
+    }
+  },
+  "source": {
+    "style": {
+      "Fontname": "Hiragino Sans",
+      "FontSize": 30,
+      "PrimaryColour": "&Hffffff",
+      "OutlineColour": "&H000000",
+      "BorderStyle": 1,
+      "Outline": 4,
+      "Shadow": 0,
+      "Bold": 1
+    },
+    "position": {
+      "Alignment": 2,
+      "MarginV": 18,
+      "MarginL": 0,
+      "MarginR": 0
+    }
+  }
+}
