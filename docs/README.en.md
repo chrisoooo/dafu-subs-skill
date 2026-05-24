@@ -2,7 +2,7 @@
 
 [中文](../README.md) | [English](README.en.md)
 
-dafu-subs is a subtitle production workspace for video localization. It turns YouTube videos into deliverable bilingual hard-subtitled MP4 files. The project can be used for overseas livestream clips, courses and tutorials, film/anime/variety clips, podcasts/interviews, vlogs/travel/culture videos, and videos in languages such as Japanese, Korean, English, and Portuguese.
+dafu-subs is a subtitle production skill for video localization. It turns YouTube videos into deliverable bilingual hard-subtitled MP4 files. The project can be used for overseas livestream clips, courses and tutorials, film/anime/variety clips, podcasts/interviews, vlogs/travel/culture videos, and videos in languages such as Japanese, Korean, English, and Portuguese.
 
 Core workflow: download assets -> source-language ASR -> Simplified Chinese translation -> bilingual ASS subtitles -> FFmpeg hard-sub rendering -> workflow summary.
 
@@ -30,6 +30,7 @@ Core workflow: download assets -> source-language ASR -> Simplified Chinese tran
 │   └── README.en.md                  # English README
 ├── downloads/                        # Assets, subtitles, and outputs by video ID
 ├── fonts/                            # ASS subtitle style configuration
+│   └── subtitle_font_style_default.json
 └── tools/
     ├── api_volcengine_asr.py         # Volcengine ASR entry point
     └── build_bilingual_ass.py        # Bilingual ASS generation tool

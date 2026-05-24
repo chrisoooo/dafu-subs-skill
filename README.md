@@ -2,7 +2,7 @@
 
 [中文](README.md) | [English](docs/README.en.md)
 
-dafu-subs 是一个面向视频“烤肉”的字幕处理工作区，用于把 YouTube 视频整理成可交付的双语硬字幕成片。当前项目可服务于海外直播切片、课程/教程视频、影视/动画/综艺片段、播客/访谈、Vlog/旅行/文化内容等，也可处理日语、韩语、英语、葡萄牙语等其他语种视频。
+dafu-subs 是一个面向视频“烤肉”的字幕处理skill，用于把 YouTube 视频整理成可交付的双语硬字幕成片。当前项目可服务于海外直播切片、课程/教程视频、影视/动画/综艺片段、播客/访谈、Vlog/旅行/文化内容等，也可处理日语、韩语、英语、葡萄牙语等其他语种视频。
 
 核心流程是：下载素材 -> 源语言 ASR -> 简体中文翻译 -> 双语 ASS 字幕 -> FFmpeg 硬烧 -> 生成流程摘要。
 
@@ -30,6 +30,7 @@ dafu-subs 是一个面向视频“烤肉”的字幕处理工作区，用于把 
 │   └── README.en.md                  # English README
 ├── downloads/                        # 按视频 ID 存放素材、字幕和成品
 ├── fonts/                            # ASS 字幕样式配置
+│   └── subtitle_font_style_default.json
 └── tools/
     ├── api_volcengine_asr.py         # 火山引擎 ASR 入口
     └── build_bilingual_ass.py        # 双语 ASS 生成工具
