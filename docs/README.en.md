@@ -234,7 +234,7 @@ python tools/build_bilingual_ass.py \
   --play-res-y 1080
 ```
 
-1. Burn subtitles:
+2. Burn subtitles:
 
 ```bash
 ffmpeg -i "downloads/<video_id>/<input>.mp4" \
