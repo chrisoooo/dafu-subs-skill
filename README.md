@@ -36,7 +36,7 @@ dafu-subs 是一个面向视频“烤肉”的字幕处理skill，用于把 YouT
     └── build_bilingual_ass.py        # 双语 ASS 生成工具
 ```
 
-## 一键安装为 Codex Skill
+## 一键安装Skill
 
 本仓库根目录已经包含 `SKILL.md`，可直接作为 Codex skill 安装。上传到 GitHub 后，在 Codex 中让它安装：
 
@@ -67,7 +67,7 @@ dafu-subs 是一个面向视频“烤肉”的字幕处理skill，用于把 YouT
 config/dafu-subs.local.example.json
 ```
 
-根据配置模板配置本地配置文件：
+根据配置模板生成本地配置文件：
 
 ```text
 config/dafu-subs.local.json
@@ -83,7 +83,7 @@ config/dafu-subs.local.json
 
 ```json
 {
-  "api_key_source": "你的X-Api-Key",
+  "api_key_source": "",
   "video_domain_context": "",
   "subtitle_font_style": "./fonts/subtitle_font_style_default.json"
 }
@@ -167,6 +167,7 @@ yt-dlp -f ba \
 ## ASR
 
 ASR 阶段只生成源语言字幕。源语言未知时可以自动识别；已知时建议显式指定语言，火山引擎语言代码，例如 `ja-JP`、`ko-KR`、`en-US`、`pt-BR`等。
+
 火山引擎录音识别文档：https://www.volcengine.com/docs/6561/1354868?lang=zh
 
 ### 火山引擎 ASR
@@ -218,6 +219,7 @@ uv run ./tools/api_volcengine_asr.py \
 ## 双语字幕和硬烧
 
 1.生成ASS
+
 双语 ASS 由 `tools/build_bilingual_ass.py` 生成，输入是一组对齐的源语言 SRT 和中文字幕 SRT。默认样式放在 `fonts/subtitle_font_style_default.json` 下。
 
 ```bash
@@ -241,6 +243,7 @@ ffmpeg -i "downloads/<video_id>/<input>.mp4" \
 ```
 
 3.总结输出
+
 完成后用 `ffprobe` 检查输出文件、分辨率、时长和音频流：
 
 ```bash

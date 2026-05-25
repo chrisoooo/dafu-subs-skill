@@ -36,7 +36,7 @@ Core workflow: download assets -> source-language ASR -> Simplified Chinese tran
     └── build_bilingual_ass.py        # Bilingual ASS generation tool
 ```
 
-## One-Click Install as a Codex Skill
+## One-Click Skill Installation
 
 This repository contains a root-level `SKILL.md`, so it can be installed directly as a Codex skill. After pushing it to GitHub, ask Codex to install it:
 
@@ -83,7 +83,7 @@ Default configuration:
 
 ```json
 {
-  "api_key_source": "your X-Api-Key",
+  "api_key_source": "",
   "video_domain_context": "",
   "subtitle_font_style": "./fonts/subtitle_font_style_default.json"
 }
@@ -167,6 +167,7 @@ The standard project workflow does not use YouTube subtitles as ASR or translati
 ## ASR
 
 ASR should only generate source-language subtitles. If the source language is unknown, automatic detection can be used. If it is known, explicitly specify the Volcengine language code, such as `ja-JP`, `ko-KR`, `en-US`, or `pt-BR`.
+
 Volcengine recording recognition docs: https://www.volcengine.com/docs/6561/1354868?lang=zh
 
 ### Volcengine ASR
@@ -220,6 +221,7 @@ Preserve:
 ## Bilingual Subtitles and Hard-Sub Rendering
 
 1. Generate ASS.
+
 Bilingual ASS files are generated with `tools/build_bilingual_ass.py` from aligned source-language and Chinese SRT files. The default style lives at `fonts/subtitle_font_style_default.json`.
 
 ```bash
@@ -232,7 +234,7 @@ python tools/build_bilingual_ass.py \
   --play-res-y 1080
 ```
 
-2. Burn subtitles:
+1. Burn subtitles:
 
 ```bash
 ffmpeg -i "downloads/<video_id>/<input>.mp4" \
@@ -243,6 +245,7 @@ ffmpeg -i "downloads/<video_id>/<input>.mp4" \
 ```
 
 3. Summary output.
+
 After rendering, use `ffprobe` to check the output file, resolution, duration, and audio stream:
 
 ```bash
