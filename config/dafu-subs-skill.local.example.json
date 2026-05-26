@@ -1,5 +1,5 @@
 {
   "api_key_source": "",
   "video_domain_context": "",
-  "subtitle_font_style": "./fonts/subtitle_font_style_default.json"
+  "subtitle_font_style": "fonts/subtitle_font_style_default.json"
 }

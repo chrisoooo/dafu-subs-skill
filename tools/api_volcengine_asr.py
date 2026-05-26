@@ -20,8 +20,8 @@ SUCCESS_CODE = 20000000
 RUNNING_CODES = {20000001, 20000002}
 DEFAULT_RESOURCE_ID = "volc.seedasr.auc"
 
-# 本地使用时可以把火山引擎 X-Api-Key 写在这里。
-# 如果同时设置了 VOLC_API_KEY，环境变量仍会优先生效。
+# Keep this empty in public repositories. Pass secrets with VOLC_API_KEY instead.
+# HARDCODED_API_KEY remains as a local fallback for private, uncommitted edits only.
 HARDCODED_API_KEY = ""
 HARDCODED_APP_KEY = ""
 HARDCODED_ACCESS_KEY = ""

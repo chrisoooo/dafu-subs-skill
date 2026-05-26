@@ -10,7 +10,7 @@ Core workflow: download assets -> source-language ASR -> Simplified Chinese tran
 
 - Download YouTube video, audio, and cover images; inspect subtitle track metadata to help identify the source language.
 - Generate source-language SRT files with Volcengine ASR.
-- Translate source-language SRT files block by block into Simplified Chinese while preserving numbering, timestamps, and blank-line structure.
+- Have AI translate source-language SRT files block by block directly into the final Simplified Chinese `.srt`, without considering local translation packages, while preserving numbering, timestamps, and blank-line structure.
 - Generate bilingual ASS subtitles from aligned source-language and Chinese subtitles.
 - Burn bilingual subtitles into MP4 files with FFmpeg.
 - Record assets, subtitles, output files, timing, and final status for each video.
@@ -21,6 +21,8 @@ Core workflow: download assets -> source-language ASR -> Simplified Chinese tran
 .
 ├── README.md                         # Main project README
 ├── SKILL.md                          # Standard subtitle workflow and execution rules
+├── agents/
+│   └── openai.yaml                   # Codex UI metadata
 ├── config/
 │   ├── dafu-subs-skill.local.example.json  # Local workflow configuration example
 │   ├── dafu-subs-skill.local.json          # Local workflow configuration, not committed
@@ -36,12 +38,15 @@ Core workflow: download assets -> source-language ASR -> Simplified Chinese tran
     └── build_bilingual_ass.py        # Bilingual ASS generation tool
 ```
 
-## One-Click Skill Installation
+`agents/openai.yaml` is optional Codex/OpenAI UI metadata for display name, short description, and default prompt. The root-level `SKILL.md` remains the core skill definition. Other agent tools can safely ignore this file if they do not recognize it.
 
-This repository contains a root-level `SKILL.md`, so it can be installed directly as a Codex skill. After pushing it to GitHub, ask Codex to install it:
+## Skill Installation
+
+This repository contains a root-level `SKILL.md`, so it can be installed directly as a skill. After pushing it to GitHub, ask Agent Tools to install it:
 
 ```text
-Install https://github.com/<owner>/dafu-subs-skill as a skill
+Install https://github.com/<owner>/dafu-subs-skill as a skill.
+The skill is at the repository root. Use --path ., and make sure the installation directory name matches the name in SKILL.md: dafu-subs-skill.
 ```
 
 After installation, invoke it like this:
@@ -52,7 +57,7 @@ Use /dafu-subs-skill to turn this YouTube video into a Simplified Chinese biling
 
 Before publishing, confirm that:
 
-- Public copies of `tools/api_volcengine_asr.py` should not contain a real API key. For private local use, the key can be written into `HARDCODED_API_KEY`.
+- Public copies of `tools/api_volcengine_asr.py` should not contain a real API key. Prefer passing secrets through the `VOLC_API_KEY` environment variable.
 - `config/dafu-subs-skill.local.json` is local-only and should not be committed; publish only `config/dafu-subs-skill.local.example.json`.
 - Do not commit `config/dafu-subs-skill.local.json`, `downloads/`, `.venv-asr/`, `.cache/`, `.uv-cache/`, `.vendor/`, `__pycache__/`, or `.DS_Store`.
 - This project uses the MIT License. See `LICENSE`.
@@ -60,6 +65,8 @@ Before publishing, confirm that:
 ## First Use/Local Configuration
 
 Before using this skill for the first time, or whenever the user explicitly says `本地配置`, complete local configuration before starting download, ASR, translation, or hard-sub rendering.
+
+After configuration is complete, the executor must first show a configuration summary and explicitly ask: `Configuration is complete. Continue with video processing?` Only after the user confirms should the workflow continue to environment checks, download, ASR, translation, or hard-sub rendering. If the user does not confirm, the workflow must stop at the completed-configuration state.
 
 Configuration template:
 
@@ -75,9 +82,9 @@ config/dafu-subs-skill.local.json
 
 Confirm and write three required values:
 
-- `api_key_source`: Volcengine X-Api-Key. After confirmation, write it into `HARDCODED_API_KEY` in `tools/api_volcengine_asr.py`.
+- `api_key_source`: Volcengine X-Api-Key. After confirmation, use it only in local configuration or environment variables; do not write it into source code.
 - `video_domain_context`: The current video's domain context. After confirmation, write it into the skill translation rules.
-- `subtitle_font_style`: Subtitle font style path. After confirmation, write it into the skill hard-sub rendering rules.
+- `subtitle_font_style`: Subtitle font style path. Relative paths are resolved from the installed skill root, then written into the skill hard-sub rendering rules.
 
 Default configuration:
 
@@ -85,11 +92,13 @@ Default configuration:
 {
   "api_key_source": "",
   "video_domain_context": "",
-  "subtitle_font_style": "./fonts/subtitle_font_style_default.json"
+  "subtitle_font_style": "fonts/subtitle_font_style_default.json"
 }
 ```
 
 If `config/dafu-subs-skill.local.json` does not exist, has missing fields, or has empty fields, it must be configured again. Configure one item at a time in this order: `api_key_source`, `video_domain_context`, `subtitle_font_style`.
+
+The default subtitle style lives at `fonts/subtitle_font_style_default.json` under the currently used skill root. Before running hard-sub commands, resolve relative paths to an absolute path inside that skill directory, not inside the current project directory, video output directory, or similarly named copy.
 
 ## Environment Setup
 
@@ -108,10 +117,18 @@ uv --version
 UV_CACHE_DIR="./.uv-cache" uv run ./tools/api_volcengine_asr.py --help
 ```
 
-3. For private local use, write the Volcengine X-Api-Key into `HARDCODED_API_KEY` in `tools/api_volcengine_asr.py`. To temporarily override that value, use the environment variable:
+3. For private local use, pass the Volcengine X-Api-Key through an environment variable:
 
 ```bash
 VOLC_API_KEY="<your-x-api-key>" UV_CACHE_DIR="./.uv-cache" uv run ./tools/api_volcengine_asr.py --help
+```
+
+If `config/dafu-subs-skill.local.json` already exists, export the key from the local JSON only for the current command:
+
+```bash
+VOLC_API_KEY="$(jq -r '.api_key_source' config/dafu-subs-skill.local.json)" \
+UV_CACHE_DIR="./.uv-cache" \
+uv run ./tools/api_volcengine_asr.py --help
 ```
 
 ## Single-Video Workflow
@@ -127,7 +144,7 @@ Recommended workflow:
 1. Create or update `downloads/<video_id>/temp.md` from `config/temp-template.md`.
 2. Download the video, original audio, and cover image. Keep the default `yt-dlp` title and video ID in filenames.
 3. Generate a source-language SRT from the source-language audio. ASR should only transcribe, not translate.
-4. Translate the source-language SRT block by block into Simplified Chinese.
+4. Have AI translate the source-language SRT block by block directly into the final Simplified Chinese `.srt`, without considering local translation packages.
 5. Generate bilingual ASS subtitles with `tools/build_bilingual_ass.py`.
 6. Burn subtitles with FFmpeg and output `<basename>.hardsub.mp4`.
 7. Generate `<basename>.summary.md` from `config/summary-template.md`.
@@ -172,16 +189,13 @@ Volcengine recording recognition docs: https://www.volcengine.com/docs/6561/1354
 
 ### Volcengine ASR
 
-1. On first use, or when `本地配置` is triggered, first write stable configuration into the corresponding places: `api_key_source` goes into `HARDCODED_API_KEY` in `tools/api_volcengine_asr.py`, while domain context and subtitle style are written into the current skill workflow rules.
-
-```python
-HARDCODED_API_KEY = "your X-Api-Key"
-```
+1. On first use, or when `本地配置` is triggered, confirm local configuration first. Pass `api_key_source` to the script through the `VOLC_API_KEY` environment variable; do not write it into `tools/api_volcengine_asr.py` or commit it to GitHub. Domain context and subtitle style are written into the current skill workflow rules.
 
 2. For each concrete video task, environment variables can also be used to pass that task's input and output paths, for example:
 
 ```bash
 UV_CACHE_DIR="./.uv-cache" \
+VOLC_API_KEY="<your-x-api-key>" \
 HARDCODED_AUDIO_FILE="downloads/<video_id>/<audio>.m4a" \
 HARDCODED_AUDIO_LANGUAGE="en-US" \
 HARDCODED_OUTPUT_JSON="downloads/<video_id>/<audio>.m4a.volc-asr-en-US.json" \
@@ -203,7 +217,7 @@ If network resolution fails inside a restricted sandbox, it is usually a network
 
 ## Translation Rules
 
-1. Translation should use only the text in each current source-language SRT block. Do not reuse existing Chinese subtitles or fill in content across blocks.
+1. The translation stage should be completed directly by AI at the subtitle-block level and written straight into the final Simplified Chinese `.srt`. Do not consider local translation packages: do not search for, install, or call local translation packages or offline translation models. Translation should use only the text in each current source-language SRT block. Do not reuse existing Chinese subtitles or fill in content across blocks.
 
 Preserve:
 
@@ -212,7 +226,13 @@ Preserve:
 - Blank-line structure.
 - One-to-one alignment between Chinese blocks and source-language blocks.
 
-2. The video domain context should be adjusted according to user needs. For example:
+2. After writing the Chinese subtitles, verify that the source SRT and Chinese SRT have the same block count, and that every block has the same numbering and timestamp. If any mismatch is found, fix the Chinese SRT and verify again.
+
+3. The only formal translation-stage deliverable is the Chinese `.srt`. Do not keep one-off translation scripts or intermediate generation scripts besides the final `.srt`.
+
+4. If temporary code is truly needed to help check numbering, timestamps, or block counts, place it only under `/private/tmp/`, or use existing tools from the installed skill directory. Do not write it into the project directory's `tools/`.
+
+5. The video domain context should be adjusted according to user needs. For example:
 
 ```text
 - For Harry Potter: Magic Awakened videos, prefer common in-game terminology for character names, card names, spells, echoes, companion cards, summons, ranks, and duel expressions. Do not add information unsupported by the source subtitles. If an ASR term looks suspicious but cannot be verified, translate conservatively or keep the original term.
@@ -222,13 +242,13 @@ Preserve:
 
 1. Generate ASS.
 
-Bilingual ASS files are generated with `tools/build_bilingual_ass.py` from aligned source-language and Chinese SRT files. The default style lives at `fonts/subtitle_font_style_default.json`.
+Bilingual ASS files are generated with `tools/build_bilingual_ass.py` from aligned source-language and Chinese SRT files. The default style lives at `fonts/subtitle_font_style_default.json` under the currently used skill root.
 
 ```bash
 python tools/build_bilingual_ass.py \
   --source-srt "downloads/<video_id>/<source>.srt" \
   --chinese-srt "downloads/<video_id>/<source>.zh.srt" \
-  --style-json "fonts/subtitle_font_style_default.json" \
+  --style-json "<installed-skill-dir>/fonts/subtitle_font_style_default.json" \
   --output-ass "downloads/<video_id>/<basename>.bilingual.ass" \
   --play-res-x 1920 \
   --play-res-y 1080
@@ -239,7 +259,7 @@ python tools/build_bilingual_ass.py \
 ```bash
 ffmpeg -i "downloads/<video_id>/<input>.mp4" \
   -vf "ass=filename='downloads/<video_id>/<basename>.bilingual.ass'" \
-  -c:v libx264 -preset medium -crf 18 \
+  -c:v libx264 -preset medium -crf 22 \
   -c:a copy \
   "downloads/<video_id>/<basename>.hardsub.mp4"
 ```
@@ -271,9 +291,13 @@ temp.md                           # Current video metadata and notes
 ## Operating Rules
 
 - Do not delete files or directories in bulk.
+- Do not commit real API keys, cookies, access tokens, `.env` files, or local configuration to GitHub.
 - `downloads/` may contain large videos, audio files, model caches, and experiment outputs. Confirm target paths before operating on them.
 - ASR `--language` is the source language, not the target translation language.
 - Chinese translation is a separate step and should not be requested during ASR.
+- Do not consider local translation packages during translation. Do not search for, install, or call local translation packages, offline translation models, or project-local temporary translation scripts to generate translated text.
+- Do not create or copy the skill's bundled resource directories into the project directory: `config/`, `tools/`, or `fonts/`.
+- If temporary code is needed during translation, place it only under `/private/tmp/`, or use existing tools from the installed skill directory. Do not write it into the project directory's `tools/`.
 - Follow platform terms and copyright requirements when processing third-party videos.
 
 ## License

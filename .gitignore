@@ -12,10 +12,14 @@ __pycache__/
 .vendor/
 .venv-asr/
 .venv*/
+.env
+.env.*
+config/dafu-subs-skill.local.json
 config/dafu-subs.local.json
 
 # Build and tool output
 *.log
+*.tmp
 
 # Generated video workspace
 downloads/

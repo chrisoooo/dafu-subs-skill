@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dafu Subs Skill"
+  short_description: "YouTube视频烤肉：ASR、翻译、双语字幕和硬烧"
+  default_prompt: "Use $dafu-subs-skill to turn this YouTube video into a Simplified Chinese bilingual hard-subtitled MP4."
