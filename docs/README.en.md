@@ -1,8 +1,8 @@
-# dafu-subs
+# dafu-subs-skill
 
 [中文](../README.md) | [English](README.en.md)
 
-dafu-subs is a subtitle production skill for video localization. It turns YouTube videos into deliverable bilingual hard-subtitled MP4 files. The project can be used for overseas livestream clips, courses and tutorials, film/anime/variety clips, podcasts/interviews, vlogs/travel/culture videos, and videos in languages such as Japanese, Korean, English, and Portuguese.
+dafu-subs-skill is a subtitle production skill for video localization. It turns YouTube videos into deliverable bilingual hard-subtitled MP4 files. The project can be used for overseas livestream clips, courses and tutorials, film/anime/variety clips, podcasts/interviews, vlogs/travel/culture videos, and videos in languages such as Japanese, Korean, English, and Portuguese.
 
 Core workflow: download assets -> source-language ASR -> Simplified Chinese translation -> bilingual ASS subtitles -> FFmpeg hard-sub rendering -> workflow summary.
 
@@ -22,8 +22,8 @@ Core workflow: download assets -> source-language ASR -> Simplified Chinese tran
 ├── README.md                         # Main project README
 ├── SKILL.md                          # Standard subtitle workflow and execution rules
 ├── config/
-│   ├── dafu-subs.local.example.json  # Local workflow configuration example
-│   ├── dafu-subs.local.json          # Local workflow configuration, not committed
+│   ├── dafu-subs-skill.local.example.json  # Local workflow configuration example
+│   ├── dafu-subs-skill.local.json          # Local workflow configuration, not committed
 │   ├── summary-template.md           # Full workflow summary template
 │   └── temp-template.md              # Per-video temporary record template
 ├── docs/
@@ -41,20 +41,20 @@ Core workflow: download assets -> source-language ASR -> Simplified Chinese tran
 This repository contains a root-level `SKILL.md`, so it can be installed directly as a Codex skill. After pushing it to GitHub, ask Codex to install it:
 
 ```text
-Install https://github.com/<owner>/dafu-subs as a skill
+Install https://github.com/<owner>/dafu-subs-skill as a skill
 ```
 
 After installation, invoke it like this:
 
 ```text
-Use /dafu-subs to turn this YouTube video into a Simplified Chinese bilingual hard-subtitled MP4: <url>
+Use /dafu-subs-skill to turn this YouTube video into a Simplified Chinese bilingual hard-subtitled MP4: <url>
 ```
 
 Before publishing, confirm that:
 
 - Public copies of `tools/api_volcengine_asr.py` should not contain a real API key. For private local use, the key can be written into `HARDCODED_API_KEY`.
-- `config/dafu-subs.local.json` is local-only and should not be committed; publish only `config/dafu-subs.local.example.json`.
-- Do not commit `config/dafu-subs.local.json`, `downloads/`, `.venv-asr/`, `.cache/`, `.uv-cache/`, `.vendor/`, `__pycache__/`, or `.DS_Store`.
+- `config/dafu-subs-skill.local.json` is local-only and should not be committed; publish only `config/dafu-subs-skill.local.example.json`.
+- Do not commit `config/dafu-subs-skill.local.json`, `downloads/`, `.venv-asr/`, `.cache/`, `.uv-cache/`, `.vendor/`, `__pycache__/`, or `.DS_Store`.
 - This project uses the MIT License. See `LICENSE`.
 
 ## First Use/Local Configuration
@@ -64,13 +64,13 @@ Before using this skill for the first time, or whenever the user explicitly says
 Configuration template:
 
 ```text
-config/dafu-subs.local.example.json
+config/dafu-subs-skill.local.example.json
 ```
 
 Create the local configuration file from the template:
 
 ```text
-config/dafu-subs.local.json
+config/dafu-subs-skill.local.json
 ```
 
 Confirm and write three required values:
@@ -89,7 +89,7 @@ Default configuration:
 }
 ```
 
-If `config/dafu-subs.local.json` does not exist, has missing fields, or has empty fields, it must be configured again. Configure one item at a time in this order: `api_key_source`, `video_domain_context`, `subtitle_font_style`.
+If `config/dafu-subs-skill.local.json` does not exist, has missing fields, or has empty fields, it must be configured again. Configure one item at a time in this order: `api_key_source`, `video_domain_context`, `subtitle_font_style`.
 
 ## Environment Setup
 

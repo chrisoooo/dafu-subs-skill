@@ -1,8 +1,8 @@
-# dafu-subs
+# dafu-subs-skill
 
 [中文](README.md) | [English](docs/README.en.md)
 
-dafu-subs 是一个面向视频“烤肉”的字幕处理skill，用于把 YouTube 视频整理成可交付的双语硬字幕成片。当前项目可服务于海外直播切片、课程/教程视频、影视/动画/综艺片段、播客/访谈、Vlog/旅行/文化内容等，也可处理日语、韩语、英语、葡萄牙语等其他语种视频。
+dafu-subs-skill | 大福烤肉 是一个面向视频“烤肉”的字幕处理skill，用于把 YouTube 视频整理成可交付的双语硬字幕成片。当前项目可服务于海外直播切片、课程/教程视频、影视/动画/综艺片段、播客/访谈、Vlog/旅行/文化内容等，也可处理日语、韩语、英语、葡萄牙语等其他语种视频。
 
 核心流程是：下载素材 -> 源语言 ASR -> 简体中文翻译 -> 双语 ASS 字幕 -> FFmpeg 硬烧 -> 生成流程摘要。
 
@@ -22,8 +22,8 @@ dafu-subs 是一个面向视频“烤肉”的字幕处理skill，用于把 YouT
 ├── README.md                         # 项目入口说明
 ├── SKILL.md                          # 标准烤肉流程和执行规则
 ├── config/
-│   ├── dafu-subs.local.example.json  # 本地流程配置示例
-│   ├── dafu-subs.local.json          # 本地流程配置，不提交
+│   ├── dafu-subs-skill.local.example.json  # 本地流程配置示例
+│   ├── dafu-subs-skill.local.json          # 本地流程配置，不提交
 │   ├── summary-template.md           # 全流程摘要模板
 │   └── temp-template.md              # 单视频临时记录模板
 ├── docs/
@@ -41,20 +41,20 @@ dafu-subs 是一个面向视频“烤肉”的字幕处理skill，用于把 YouT
 本仓库根目录已经包含 `SKILL.md`，可直接作为 Codex skill 安装。上传到 GitHub 后，在 Codex 中让它安装：
 
 ```text
-安装 https://github.com/<owner>/dafu-subs 这个 skill
+安装 https://github.com/<owner>/dafu-subs-skill 这个 skill
 ```
 
 安装后可这样触发：
 
 ```text
-使用 /dafu-subs 把这个 YouTube 视频处理成简体中文双语硬字幕成片：<url>
+使用 /dafu-subs-skill 把这个 YouTube 视频处理成简体中文双语硬字幕成片：<url>
 ```
 
 公开上传前请确认：
 
 - 公开仓库里的 `tools/api_volcengine_asr.py` 不应包含真实 API key；如果个人私有使用，可以把密钥写入 `HARDCODED_API_KEY`。
-- `config/dafu-subs.local.json` 是本机配置，不提交；公开模板只保留 `config/dafu-subs.local.example.json`。
-- 不提交 `config/dafu-subs.local.json`、`downloads/`、`.venv-asr/`、`.cache/`、`.uv-cache/`、`.vendor/`、`__pycache__/` 和 `.DS_Store`。
+- `config/dafu-subs-skill.local.json` 是本机配置，不提交；公开模板只保留 `config/dafu-subs-skill.local.example.json`。
+- 不提交 `config/dafu-subs-skill.local.json`、`downloads/`、`.venv-asr/`、`.cache/`、`.uv-cache/`、`.vendor/`、`__pycache__/` 和 `.DS_Store`。
 - 本项目使用 MIT License，详见 `LICENSE`。
 
 ## 首次使用/本地配置
@@ -64,13 +64,13 @@ dafu-subs 是一个面向视频“烤肉”的字幕处理skill，用于把 YouT
 配置模板：
 
 ```text
-config/dafu-subs.local.example.json
+config/dafu-subs-skill.local.example.json
 ```
 
 根据配置模板生成本地配置文件：
 
 ```text
-config/dafu-subs.local.json
+config/dafu-subs-skill.local.json
 ```
 
 需要确认并写入三项：
@@ -89,7 +89,7 @@ config/dafu-subs.local.json
 }
 ```
 
-如果 `config/dafu-subs.local.json` 不存在、字段缺失或字段为空，必须重新配置。配置时一次只确认一项，按 `api_key_source`、`video_domain_context`、`subtitle_font_style` 的顺序进行。
+如果 `config/dafu-subs-skill.local.json` 不存在、字段缺失或字段为空，必须重新配置。配置时一次只确认一项，按 `api_key_source`、`video_domain_context`、`subtitle_font_style` 的顺序进行。
 
 ## 环境准备
 
