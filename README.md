@@ -42,10 +42,10 @@ dafu-subs-skill | 大福烤肉 是一个面向视频“烤肉”的字幕处理s
 
 ## 安装 Skill
 
-本仓库根目录已经包含 `SKILL.md`，可直接作为 skill 安装。上传到 GitHub 后，在 agent工具 中让它安装：
+本仓库根目录已经包含 `SKILL.md`，可直接作为 skill 安装。在 agent工具 中让它安装，并重启 agent工具：
 
 ```text
-安装 https://github.com/<owner>/dafu-subs-skill 这个 skill。
+安装 https://github.com/chrisoooo/dafu-subs-skill 这个 skill。
 这个仓库的 skill 在仓库根目录，请使用 --path . 安装，并且安装目录名必须和 SKILL.md 里的 name 一致：dafu-subs-skill。
 ```
 
