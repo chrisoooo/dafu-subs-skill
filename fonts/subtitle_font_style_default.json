@@ -2,7 +2,7 @@
   "chinese": {
     "style": {
       "Fontname": "Heiti SC",
-      "FontSize": 46,
+      "FontSize": 52,
       "PrimaryColour": "&Hffffff",
       "OutlineColour": "&H000000",
       "BorderStyle": 1,
@@ -20,7 +20,7 @@
   "source": {
     "style": {
       "Fontname": "Hiragino Sans",
-      "FontSize": 30,
+      "FontSize": 34,
       "PrimaryColour": "&Hffffff",
       "OutlineColour": "&H000000",
       "BorderStyle": 1,

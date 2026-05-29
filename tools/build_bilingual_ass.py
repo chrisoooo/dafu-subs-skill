@@ -267,16 +267,17 @@ def build_ass(
 
     events: list[str] = []
     center_x = play_res_x // 2
+    # Tuned for the default 1080p style: Chinese 52px, source 34px.
     # Tightest spacing when both subtitle tracks stay on one line.
-    single_chinese_y = play_res_y - 52
+    single_chinese_y = play_res_y - 56
     single_source_y = play_res_y - 10
     # Separate tuning for mixed-height pairs.
-    zh_double_src_single_chinese_y = play_res_y - 66
+    zh_double_src_single_chinese_y = play_res_y - 70
     zh_double_src_single_source_y = play_res_y - 14
-    zh_single_src_double_chinese_y = play_res_y - 78
+    zh_single_src_double_chinese_y = play_res_y - 86
     zh_single_src_double_source_y = play_res_y - 18
     # Slightly tighter spacing when both subtitle tracks occupy multiple lines.
-    double_chinese_y = play_res_y - 92
+    double_chinese_y = play_res_y - 100
     double_source_y = play_res_y - 12
 
     for zh, src in zip(chinese, source):
