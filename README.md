@@ -2,11 +2,11 @@
 
 [中文](README.md) | [English](docs/README.en.md)
 
-dafu-subs-skill | 大福烤肉 是一个面向视频“烤肉”的字幕处理skill，用于把 YouTube 视频整理成可交付的双语硬字幕成片。当前项目可服务于海外直播切片、课程/教程视频、影视/动画/综艺片段、播客/访谈、Vlog/旅行/文化内容等，也可处理日语、韩语、英语、葡萄牙语等其他语种视频。
+dafu-subs-skill | 大福烤肉，是一个面向视频“烤肉”的字幕处理skill，用于把 YouTube 视频整理成可交付的双语硬字幕成片。当前项目可服务于海外直播切片、课程/教程视频、影视/动画/综艺片段、播客/访谈、Vlog/旅行/文化内容等，也可处理日语、韩语、英语、葡萄牙语等其他语种视频。
 
 核心流程是：下载素材 -> 源语言 ASR -> 简体中文翻译 -> 双语 ASS 字幕 -> FFmpeg 硬烧 -> 生成流程摘要。
 
-## 项目能力
+## 1.项目能力
 
 - 下载 YouTube 视频、音频和封面；查看字幕轨道元数据用于辅助判断源语言。
 - 使用火山引擎 ASR 生成源语言 SRT。
@@ -15,14 +15,14 @@ dafu-subs-skill | 大福烤肉 是一个面向视频“烤肉”的字幕处理s
 - 使用 FFmpeg 将双语字幕硬烧进 MP4。
 - 为单个视频记录素材、字幕、成品、耗时和最终状态。
 
-## 目录结构
+## 2.目录结构
 
 ```text
 .
 ├── README.md                         # 项目入口说明
 ├── SKILL.md                          # 标准烤肉流程和执行规则
 ├── agents/
-│   └── openai.yaml                   # Codex UI 展示元数据
+│   └── openai.yaml                   # Codex UI 展示元数据（不是Codex可忽略）
 ├── config/
 │   ├── dafu-subs-skill.local.example.json  # 本地流程配置示例
 │   ├── dafu-subs-skill.local.json          # 本地流程配置，不提交
@@ -40,7 +40,7 @@ dafu-subs-skill | 大福烤肉 是一个面向视频“烤肉”的字幕处理s
 
 `agents/openai.yaml` 是可选的 Codex/OpenAI UI 元数据，用于显示名称、短说明和默认提示词；核心 skill 逻辑仍以根目录的 `SKILL.md` 为准。其他 agent 工具如果不识别这个文件，可以安全忽略它。
 
-## 安装 Skill
+## 3.安装 Skill
 
 本仓库根目录已经包含 `SKILL.md`，可直接作为 skill 安装。在 agent工具 中让它安装，并重启 agent工具：
 
@@ -49,21 +49,18 @@ dafu-subs-skill | 大福烤肉 是一个面向视频“烤肉”的字幕处理s
 这个仓库的 skill 在仓库根目录，请使用 --path . 安装，并且安装目录名必须和 SKILL.md 里的 name 一致：dafu-subs-skill。
 ```
 
-安装后可这样触发：
-/dafu-subs-skill后输入：
+## 4.环境准备
 
-```text
-把这个 YouTube 视频处理成简体中文双语硬字幕成片：<url>
+建议先确认基础工具可用，如未安装会自动安装：
+
+```bash
+yt-dlp --version
+ffmpeg -version
+python3 --version
+uv --version
 ```
 
-公开上传前请确认：
-
-- 公开仓库里的 `tools/api_volcengine_asr.py` 不应包含真实 API key；优先用 `VOLC_API_KEY` 环境变量传入密钥。
-- `config/dafu-subs-skill.local.json` 是本机配置，不提交；公开模板只保留 `config/dafu-subs-skill.local.example.json`。
-- 不提交 `config/dafu-subs-skill.local.json`、`downloads/`、`.venv-asr/`、`.cache/`、`.uv-cache/`、`.vendor/`、`__pycache__/` 和 `.DS_Store`。
-- 本项目使用 MIT License，详见 `LICENSE`。
-
-## 首次使用/本地配置
+## 5.首次使用/本地配置
 
 首次使用本 skill，或用户明确说出 `本地配置` 时，必须先完成本地配置，再进入下载、ASR、翻译或烧制流程。
 
@@ -101,38 +98,23 @@ config/dafu-subs-skill.local.json
 
 默认字幕样式位于当前正在使用的 skill 根目录下的 `fonts/subtitle_font_style_default.json`。执行烧制相关命令前，应将相对路径解析成该 skill 目录中的绝对路径，而不是当前项目目录、视频输出目录或名字相似的副本目录中的路径。
 
-## 环境准备
+## 6.如何使用
 
-1.建议先确认基础工具可用：
+安装后可这样触发：
 
-```bash
-yt-dlp --version
-ffmpeg -version
-python3 --version
-uv --version
+```text
+/dafu-subs-skill
 ```
 
-2.火山引擎 ASR 脚本通过 `uv run ./tools/api_volcengine_asr.py` 执行。为避免缓存写到用户目录，建议显式设置工作区内缓存目录：
+然后输入：
 
-```bash
-UV_CACHE_DIR="./.uv-cache" uv run ./tools/api_volcengine_asr.py --help
+```text
+把这个 YouTube 视频处理成简体中文双语硬字幕成片：<url>
 ```
 
-3.个人本地使用时，用环境变量传入火山引擎 X-Api-Key：
+## 7.核心流程
 
-```bash
-VOLC_API_KEY="<your-x-api-key>" UV_CACHE_DIR="./.uv-cache" uv run ./tools/api_volcengine_asr.py --help
-```
-
-如果已经生成了 `config/dafu-subs-skill.local.json`，可以从本地 JSON 只为本次命令导出密钥：
-
-```bash
-VOLC_API_KEY="$(jq -r '.api_key_source' config/dafu-subs-skill.local.json)" \
-UV_CACHE_DIR="./.uv-cache" \
-uv run ./tools/api_volcengine_asr.py --help
-```
-
-## 单视频标准流程
+### a.单视频标准流程
 
 每个视频使用独立目录：
 
@@ -150,7 +132,7 @@ downloads/<video_id>/
 6. 用 FFmpeg 硬烧字幕，输出 `<basename>.hardsub.mp4`。
 7. 按 `config/summary-template.md` 生成 `<basename>.summary.md`。
 
-## 下载素材
+### b.下载素材
 
 在 `zsh/终端` 中运行 `yt-dlp` 时，YouTube 链接要用单引号包起来，避免 URL 中的 `?` 被 shell 当作通配符解析。
 
@@ -182,13 +164,13 @@ yt-dlp -f ba \
 
 本项目标准流程不使用 YouTube 字幕作为 ASR 或翻译输入；字幕轨道只用于辅助判断语言或排查。
 
-## ASR
+### c.ASR
 
 ASR 阶段只生成源语言字幕。源语言未知时可以自动识别；已知时建议显式指定语言，火山引擎语言代码，例如 `ja-JP`、`ko-KR`、`en-US`、`pt-BR`等。
 
 火山引擎录音识别文档：https://www.volcengine.com/docs/6561/1354868?lang=zh
 
-### 火山引擎 ASR
+#### 火山引擎 ASR
 
 1.首次使用或触发 `本地配置` 时，先确认本机配置。`api_key_source` 应通过 `VOLC_API_KEY` 环境变量传给脚本，不要写入 `tools/api_volcengine_asr.py` 或提交到 GitHub；领域语境和字幕样式写入当前 skill 流程规则。
 
@@ -216,7 +198,7 @@ uv run ./tools/api_volcengine_asr.py \
 
 如果在受限沙盒里出现网络解析错误，通常是联网权限问题，不是脚本参数问题。
 
-## 翻译规范
+### d.翻译规范
 
 1.翻译阶段由 AI 直接完成字幕块翻译，并直接写入最终中文字幕 `.srt`。翻译阶段不考虑本地翻译包，不查找、不安装、不调用本地翻译包或离线翻译模型；只基于当前源语言 SRT 的字幕块文本，不复用已有中文字幕，也不跨块补写内容。
 
@@ -238,7 +220,7 @@ uv run ./tools/api_volcengine_asr.py \
 - 《哈利波特：魔法觉醒》相关视频优先使用游戏内常见术语，如角色名、卡牌名、咒语名、回响、伙伴卡、召唤物、段位和决斗表达。源字幕不支持的信息不要凭主题补充；ASR 可疑但无法确认时，保守翻译或保留原词。
 ```
 
-## 双语字幕和硬烧
+### e.双语字幕和硬烧
 
 1.生成ASS
 
@@ -272,7 +254,7 @@ ffmpeg -i "downloads/<video_id>/<input>.mp4" \
 ffprobe -hide_banner "downloads/<video_id>/<basename>.hardsub.mp4"
 ```
 
-## 产物命名
+### f.产物命名
 
 常见文件：
 
@@ -288,7 +270,7 @@ temp.md                           # 当前视频基础信息
 
 `yt-dlp --keep-video` 可能留下 `.f399.mp4`、`.f140.m4a` 等分片。它们可作为中间素材或排查依据，不应作为最终主产物列出。
 
-## 操作规则
+### g.操作规则
 
 - 不要批量删除文件或目录。
 - 不要把真实 API key、cookie、访问令牌、`.env` 或本地配置提交到 GitHub。
@@ -300,6 +282,6 @@ temp.md                           # 当前视频基础信息
 - 翻译阶段如需临时代码，只能放在 `/private/tmp/`，或使用已安装 skill 目录中已有工具；不得写入项目目录的 `tools/`。
 - 处理第三方视频时请遵守平台条款和版权要求。
 
-## License
+## 8.License
 
 MIT License，详见 `LICENSE`。

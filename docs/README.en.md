@@ -6,7 +6,7 @@ dafu-subs-skill is a subtitle production skill for video localization. It turns 
 
 Core workflow: download assets -> source-language ASR -> Simplified Chinese translation -> bilingual ASS subtitles -> FFmpeg hard-sub rendering -> workflow summary.
 
-## Capabilities
+## 1. Capabilities
 
 - Download YouTube video, audio, and cover images; inspect subtitle track metadata to help identify the source language.
 - Generate source-language SRT files with Volcengine ASR.
@@ -15,14 +15,14 @@ Core workflow: download assets -> source-language ASR -> Simplified Chinese tran
 - Burn bilingual subtitles into MP4 files with FFmpeg.
 - Record assets, subtitles, output files, timing, and final status for each video.
 
-## Directory Structure
+## 2. Directory Structure
 
 ```text
 .
 ├── README.md                         # Main project README
 ├── SKILL.md                          # Standard subtitle workflow and execution rules
 ├── agents/
-│   └── openai.yaml                   # Codex UI metadata
+│   └── openai.yaml                   # Codex UI metadata (not required by Codex; can be ignored)
 ├── config/
 │   ├── dafu-subs-skill.local.example.json  # Local workflow configuration example
 │   ├── dafu-subs-skill.local.json          # Local workflow configuration, not committed
@@ -40,29 +40,27 @@ Core workflow: download assets -> source-language ASR -> Simplified Chinese tran
 
 `agents/openai.yaml` is optional Codex/OpenAI UI metadata for display name, short description, and default prompt. The root-level `SKILL.md` remains the core skill definition. Other agent tools can safely ignore this file if they do not recognize it.
 
-## Skill Installation
+## 3. Skill Installation
 
-This repository contains a root-level `SKILL.md`, so it can be installed directly as a skill. After pushing it to GitHub, ask Agent Tools to install it:
-
-```text
-Install https://github.com/<owner>/dafu-subs-skill as a skill.
-The skill is at the repository root. Use --path ., and make sure the installation directory name matches the name in SKILL.md: dafu-subs-skill.
-```
-
-After installation, invoke it like this:
+This repository contains a root-level `SKILL.md`, so it can be installed directly as a skill. Ask Agent Tools to install it, then restart Agent Tools:
 
 ```text
-Use /dafu-subs-skill to turn this YouTube video into a Simplified Chinese bilingual hard-subtitled MP4: <url>
+Install https://github.com/chrisoooo/dafu-subs-skill as a skill.
+The skill is at the repository root. Use --path ., and the installation directory name must match the name in SKILL.md: dafu-subs-skill.
 ```
 
-Before publishing, confirm that:
+## 4. Environment Setup
 
-- Public copies of `tools/api_volcengine_asr.py` should not contain a real API key. Prefer passing secrets through the `VOLC_API_KEY` environment variable.
-- `config/dafu-subs-skill.local.json` is local-only and should not be committed; publish only `config/dafu-subs-skill.local.example.json`.
-- Do not commit `config/dafu-subs-skill.local.json`, `downloads/`, `.venv-asr/`, `.cache/`, `.uv-cache/`, `.vendor/`, `__pycache__/`, or `.DS_Store`.
-- This project uses the MIT License. See `LICENSE`.
+First, confirm that the basic tools are available. If they are not installed, they will be installed automatically:
 
-## First Use/Local Configuration
+```bash
+yt-dlp --version
+ffmpeg -version
+python3 --version
+uv --version
+```
+
+## 5. First Use/Local Configuration
 
 Before using this skill for the first time, or whenever the user explicitly says `本地配置`, complete local configuration before starting download, ASR, translation, or hard-sub rendering.
 
@@ -100,38 +98,23 @@ If `config/dafu-subs-skill.local.json` does not exist, has missing fields, or ha
 
 The default subtitle style lives at `fonts/subtitle_font_style_default.json` under the currently used skill root. Before running hard-sub commands, resolve relative paths to an absolute path inside that skill directory, not inside the current project directory, video output directory, or similarly named copy.
 
-## Environment Setup
+## 6. How to Use
 
-1. First, confirm that the basic tools are available:
+After installation, invoke it like this:
 
-```bash
-yt-dlp --version
-ffmpeg -version
-python3 --version
-uv --version
+```text
+/dafu-subs-skill
 ```
 
-2. The Volcengine ASR script is run through `uv run ./tools/api_volcengine_asr.py`. To avoid writing cache files into the user directory, explicitly place the cache inside the workspace:
+Then enter:
 
-```bash
-UV_CACHE_DIR="./.uv-cache" uv run ./tools/api_volcengine_asr.py --help
+```text
+Turn this YouTube video into a Simplified Chinese bilingual hard-subtitled MP4: <url>
 ```
 
-3. For private local use, pass the Volcengine X-Api-Key through an environment variable:
+## 7. Core Workflow
 
-```bash
-VOLC_API_KEY="<your-x-api-key>" UV_CACHE_DIR="./.uv-cache" uv run ./tools/api_volcengine_asr.py --help
-```
-
-If `config/dafu-subs-skill.local.json` already exists, export the key from the local JSON only for the current command:
-
-```bash
-VOLC_API_KEY="$(jq -r '.api_key_source' config/dafu-subs-skill.local.json)" \
-UV_CACHE_DIR="./.uv-cache" \
-uv run ./tools/api_volcengine_asr.py --help
-```
-
-## Single-Video Workflow
+### a. Single-Video Workflow
 
 Use one dedicated directory per video:
 
@@ -149,7 +132,7 @@ Recommended workflow:
 6. Burn subtitles with FFmpeg and output `<basename>.hardsub.mp4`.
 7. Generate `<basename>.summary.md` from `config/summary-template.md`.
 
-## Download Assets
+### b. Download Assets
 
 When running `yt-dlp` in `zsh/terminal`, wrap YouTube URLs in single quotes so the `?` in the URL is not parsed as a shell wildcard.
 
@@ -181,13 +164,13 @@ yt-dlp -f ba \
 
 The standard project workflow does not use YouTube subtitles as ASR or translation input. Subtitle tracks are only used to help identify the source language or diagnose issues.
 
-## ASR
+### c. ASR
 
 ASR should only generate source-language subtitles. If the source language is unknown, automatic detection can be used. If it is known, explicitly specify the Volcengine language code, such as `ja-JP`, `ko-KR`, `en-US`, or `pt-BR`.
 
 Volcengine recording recognition docs: https://www.volcengine.com/docs/6561/1354868?lang=zh
 
-### Volcengine ASR
+#### Volcengine ASR
 
 1. On first use, or when `本地配置` is triggered, confirm local configuration first. Pass `api_key_source` to the script through the `VOLC_API_KEY` environment variable; do not write it into `tools/api_volcengine_asr.py` or commit it to GitHub. Domain context and subtitle style are written into the current skill workflow rules.
 
@@ -215,7 +198,7 @@ uv run ./tools/api_volcengine_asr.py \
 
 If network resolution fails inside a restricted sandbox, it is usually a network permission issue, not a script parameter issue.
 
-## Translation Rules
+### d. Translation Rules
 
 1. The translation stage should be completed directly by AI at the subtitle-block level and written straight into the final Simplified Chinese `.srt`. Do not consider local translation packages: do not search for, install, or call local translation packages or offline translation models. Translation should use only the text in each current source-language SRT block. Do not reuse existing Chinese subtitles or fill in content across blocks.
 
@@ -238,7 +221,7 @@ Preserve:
 - For Harry Potter: Magic Awakened videos, prefer common in-game terminology for character names, card names, spells, echoes, companion cards, summons, ranks, and duel expressions. Do not add information unsupported by the source subtitles. If an ASR term looks suspicious but cannot be verified, translate conservatively or keep the original term.
 ```
 
-## Bilingual Subtitles and Hard-Sub Rendering
+### e. Bilingual Subtitles and Hard-Sub Rendering
 
 1. Generate ASS.
 
@@ -272,7 +255,7 @@ After rendering, use `ffprobe` to check the output file, resolution, duration, a
 ffprobe -hide_banner "downloads/<video_id>/<basename>.hardsub.mp4"
 ```
 
-## Output Naming
+### f. Output Naming
 
 Common files:
 
@@ -288,7 +271,7 @@ temp.md                           # Current video metadata and notes
 
 `yt-dlp --keep-video` may leave fragments such as `.f399.mp4` and `.f140.m4a`. They can be kept as intermediate assets or troubleshooting evidence, but should not be listed as final primary outputs.
 
-## Operating Rules
+### g. Operating Rules
 
 - Do not delete files or directories in bulk.
 - Do not commit real API keys, cookies, access tokens, `.env` files, or local configuration to GitHub.
@@ -300,6 +283,6 @@ temp.md                           # Current video metadata and notes
 - If temporary code is needed during translation, place it only under `/private/tmp/`, or use existing tools from the installed skill directory. Do not write it into the project directory's `tools/`.
 - Follow platform terms and copyright requirements when processing third-party videos.
 
-## License
+## 8. License
 
 MIT License. See `LICENSE`.
