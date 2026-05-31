@@ -22,7 +22,7 @@ Core workflow: download assets -> source-language ASR -> Simplified Chinese tran
 ├── README.md                         # Main project README
 ├── SKILL.md                          # Standard subtitle workflow and execution rules
 ├── agents/
-│   └── openai.yaml                   # Codex UI metadata (not required by Codex; can be ignored)
+│   └── openai.yaml                   # Codex UI metadata (non-Codex tools can ignore it)
 ├── config/
 │   ├── dafu-subs-skill.local.example.json  # Local workflow configuration example
 │   ├── dafu-subs-skill.local.json          # Local workflow configuration, not committed
@@ -45,8 +45,7 @@ Core workflow: download assets -> source-language ASR -> Simplified Chinese tran
 This repository contains a root-level `SKILL.md`, so it can be installed directly as a skill. Ask Agent Tools to install it, then restart Agent Tools:
 
 ```text
-Install https://github.com/chrisoooo/dafu-subs-skill as a skill.
-The skill is at the repository root. Use --path ., and the installation directory name must match the name in SKILL.md: dafu-subs-skill.
+Please install https://github.com/chrisoooo/dafu-subs-skill. It is a regular Agent Skill, not a plugin. The repository root is the skill, and the installation directory name must exactly match the name in SKILL.md: dafu-subs-skill. Do not clone, copy, or create any files under the current project directory, current workspace, or current cwd. Install it into the current agent tool's user-level skills directory, for example .claude/skills/dafu-subs-skill under the user's home directory for Claude Code, or .codex/skills/dafu-subs-skill under the user's home directory or the default skills directory for Codex; on Windows, use the corresponding user home directory path. You may clone directly into the final skills directory. After installation, confirm that the target directory contains SKILL.md and that its name is dafu-subs-skill.
 ```
 
 ## 4. Environment Setup
@@ -63,6 +62,10 @@ uv --version
 ## 5. First Use/Local Configuration
 
 Before using this skill for the first time, or whenever the user explicitly says `本地配置`, complete local configuration before starting download, ASR, translation, or hard-sub rendering.
+
+```text
+/dafu-subs-skill 本地配置
+```
 
 After configuration is complete, the executor must first show a configuration summary and explicitly ask: `Configuration is complete. Continue with video processing?` Only after the user confirms should the workflow continue to environment checks, download, ASR, translation, or hard-sub rendering. If the user does not confirm, the workflow must stop at the completed-configuration state.
 
